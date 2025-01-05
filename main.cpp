@@ -9,6 +9,49 @@ int i;
 float tx = 10;
 float bx = -270;
 float angle = 0.0f;
+float leafAngle = 0.0f;
+bool leafDirection = true;
+
+//------------------------------------------ Pohon Kelapa --------------------------------------------------
+void batangKelapa(float x, float y, float height, float curve) {
+    glBegin(GL_TRIANGLE_STRIP);
+    for (int i = 0; i <= 20; i++) {
+        float t = (float)i / 20;
+        float xOffset = curve * t * (1.0f - t); // Melengkungkan batang
+        float xBase = x + xOffset;
+        float yBase = y + t * height;
+        glVertex2f(xBase - 5, yBase); // Kiri batang
+        glVertex2f(xBase + 5, yBase); // Kanan batang
+    }
+    glEnd();
+}
+
+void daunKelapa(float x, float y, float length, float angleOffset, int segments) {
+    glBegin(GL_LINE_STRIP);
+    for (int i = 0; i <= segments; i++) {
+        float t = (float)i / segments;
+        float angle = angleOffset + (1.0f - t) * 0.5f * sin(leafAngle * 3.14159 / 180.0f); // Efek melambai
+        float xPos = x + t * length * cos(angle);
+        float yPos = y + t * length * sin(angle);
+        glVertex2f(xPos, yPos);
+    }
+    glEnd();
+}
+
+void pohonKelapa(float x, float y) {
+    // Batang
+    glColor3ub(139, 69, 19);
+    batangKelapa(x, y, 150.0f, 20.0f); // Tinggi batang ditingkatkan menjadi 150.0f
+
+    // Daun
+    glColor3ub(34, 139, 34);
+    for (int i = 0; i < 5; i++) {
+        float angleOffset = (i * 72.0f - 90.0f) * 3.14159 / 180.0f; // Sudut daun tersebar
+        daunKelapa(x, y + 150, 90.0f, angleOffset, 20); // Daun lebih panjang
+        daunKelapa(x, y + 150, 80.0f, angleOffset + 0.1f, 20); // Tambahan daun lebih pendek
+        daunKelapa(x, y + 150, 70.0f, angleOffset - 0.1f, 20); // Tambahan daun lebih pendek
+    }
+}
 
 //------------------------------------------ Tumbleweed --------------------------------------------------
 void tumbleweed(float centerX, float centerY, float radius, int segments, float lineWidth) {
@@ -175,6 +218,7 @@ void display() {
     glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
 
+
     // Tumbleweed bawah (refleksi)
     glColor3ub(105, 92, 59);
     glPushMatrix();
@@ -186,13 +230,16 @@ void display() {
 
     glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer
 
-    // Tumbleweed atas
+    // Tumbleweed
     glColor3ub(0, 0, 0);
     glPushMatrix();
     glTranslatef(bx, 55, 0);
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
     tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f);
     glPopMatrix();
+
+    // Pohon Kelapa
+    pohonKelapa(145.0f, -30.0f); //posisi pohon kelapa berdiri
 
     // Update posisi tumbleweed
     angle -= 0.01;
@@ -201,6 +248,17 @@ void display() {
         bx = -270;
     if (angle <= -360.0f)
         angle += 360.0f;
+
+    // Gerakan daun
+    if (leafDirection)
+        leafAngle += 0.5f;
+    else
+        leafAngle -= 0.5f;
+
+    if (leafAngle > 15.0f)
+        leafDirection = false;
+    else if (leafAngle < -15.0f)
+        leafDirection = true;
 
     glutPostRedisplay();
     glFlush();
@@ -217,7 +275,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(1354, 760);
-    glutCreateWindow("Tumbleweed Refleksi di Danau");
+    glutCreateWindow("Pohon Kelapa dan Tumbleweed");
 
     init();
     glutDisplayFunc(display);
