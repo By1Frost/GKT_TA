@@ -12,6 +12,12 @@ float angle = 0.0f;
 float leafAngle = 0.0f;
 bool leafDirection = true;
 
+// Variabel untuk gerakan tumbleweed melompat
+float by = 42;           // Posisi y awal tumbleweed
+float jumpPhase = 0.0f;  // Fase gerakan melompat
+float jumpAmplitude = 40.0f; // Amplitudo lompatan (tinggi lompatan)
+float jumpSpeed = 0.01f;  // Kecepatan perubahan fase
+
 //----------------------------------------------- Resolusi ------------------------------------------------------
 void reshape(int width, int height) {
     glViewport(0, 0, width, height);
@@ -88,18 +94,17 @@ void tumbleweed(float centerX, float centerY, float radius, int segments, float 
     glBegin(GL_LINES);
 
     for (int i = 0; i < segments; i++) {
-        float angle = (i * 2.0f * 3.14159f) / segments; // Sudut dasar setiap jari-jari
+        float angle = (i * 2.0f * 3.14159f) / segments;
         float xStart = centerX;
         float yStart = centerY;
 
         float xCurrent = xStart;
         float yCurrent = yStart;
 
-        int subSegments = 6; // Membagi garis menjadi lebih banyak segmen patahan
+        int subSegments = 6;
         for (int j = 0; j < subSegments; j++) {
             float segmentLength = radius / subSegments;
-
-            float offsetAngle = ((float)rand() / RAND_MAX - 0.5f) * (3.14159f / 4); // Deviasi sudut
+            float offsetAngle = ((float)rand() / RAND_MAX - 0.5f) * (3.14159f / 4);
             angle += offsetAngle;
 
             float xNext = xCurrent + cos(angle) * segmentLength;
@@ -114,7 +119,7 @@ void tumbleweed(float centerX, float centerY, float radius, int segments, float 
     }
 
     glEnd();
-    glLineWidth(1.0f); // Kembalikan ketebalan garis ke default
+    glLineWidth(1.0f);
 }
 
 //------------------------------------------ Alas --------------------------------------------------
@@ -260,7 +265,7 @@ void display() {
     glColor3ub(105, 92, 59); //warna rgb
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(bx, 20, 0); //posisi tumbleweed
+    glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
     tumbleweed(0.0f, 0.0f, 25.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
@@ -272,12 +277,12 @@ void display() {
     pohon(0, 0, 0.4f);
     glPopMatrix();
 
-    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (refleksi untuk objek setelah kode ini)
+    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop dananu untuk objek setelah kode ini dimatikan)
 
     // Tumbleweed
-    glColor3ub(0, 0, 0); //warna rgb
+    glColor3ub(105, 92, 59); //warna rgb
     glPushMatrix();
-    glTranslatef(bx, 42, 0); //posisi tumbleweed
+    glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
     tumbleweed(0.0f, 0.0f, 25.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
@@ -287,7 +292,12 @@ void display() {
 
     // Update posisi tumbleweed
     angle -= 0.01;
-    bx += 1;
+    bx += 0.5;
+    jumpPhase += jumpSpeed; // Perbarui fase lompatan
+    by = 42 + jumpAmplitude * fabs(sin(jumpPhase)); // Gerakan y dengan lompatan sinus
+
+    angle -= 0.01;
+    bx += 0.5;
     if (bx > 600)
         bx = -570;
     if (angle <= -360.0f)
