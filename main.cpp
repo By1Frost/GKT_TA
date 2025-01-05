@@ -261,9 +261,8 @@ void display() {
     glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
 
-
-    // Tumbleweed bawah (refleksi)
-    glColor3ub(105, 92, 59); //warna rgb
+    // Tumbleweed (refleksi)
+    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 0.35f); // Warna dengan transparansi (rgba)
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(bx, by, 0); //posisi tumbleweed
@@ -272,16 +271,17 @@ void display() {
     glPopMatrix();
 
     // Pohon Kelapa (Refleksi)
+    glColor4f(0.55f, 0.27f, 0.07f, 0.25f); // Transparansi batang pohon
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(220, 60, 0);
     pohon(0, 0, 0.4f);
     glPopMatrix();
 
-    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop dananu untuk objek setelah kode ini dimatikan)
+    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop danau untuk objek setelah kode ini dimatikan)
 
     // Tumbleweed
-    glColor3ub(105, 92, 59); //warna rgb
+    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); // Warna dengan transparansi (rgba)
     glPushMatrix();
     glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
@@ -321,6 +321,8 @@ void init() {
     glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
     glOrtho(-250.0, 250.0, -250.0, 250.0, -1.0, 1.0);
     glEnable(GL_STENCIL_TEST); // Aktifkan stencil buffer
+    glEnable(GL_BLEND);        // Aktifkan blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main(int argc, char** argv) {

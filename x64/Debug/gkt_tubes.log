@@ -23,5 +23,5 @@ C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(298,13): warning C4244:
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(327,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(329,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   gkt_tubes.vcxproj -> C:\Users\enigm\source\repos\gkt_tubes\x64\Debug\gkt_tubes.exe
