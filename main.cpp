@@ -233,6 +233,13 @@ void display() {
     tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
 
+    // Pohon Kelapa (Refleksi)
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f);
+    glTranslatef(140, 67, 0);
+    pohon(0, 0, 0.4f);
+    glPopMatrix();
+
     glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (refleksi untuk objek setelah kode ini)
 
     // Tumbleweed
