@@ -111,13 +111,18 @@ void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) 
         float spokeX = x + spokeRadius * cos(angle);
         float spokeY = y + spokeRadius * sin(angle);
 
-        // Titik awal selalu di pusat lingkaran
-        glVertex2f(x, y);
-        // Titik akhir acak di sekitar lingkaran
+        // Titik awal selalu di sekitar lingkaran (bukan hanya di pusat)
+        float baseRadius = radius / 2 + (rand() % (int)(radius / 2));
+        float baseX = x + baseRadius * cos(angle + (rand() % 20 - 10) * 0.1f);
+        float baseY = y + baseRadius * sin(angle + (rand() % 20 - 10) * 0.1f);
+
+        // Gambar garis dari titik acak di dalam lingkaran ke ujung acak
+        glVertex2f(baseX, baseY);
         glVertex2f(spokeX, spokeY);
     }
     glEnd();
 }
+
 
 //------------------------------------------ Alas --------------------------------------------------
 void kotak(float left, float right, float bottom, float top) {
@@ -264,7 +269,7 @@ void display() {
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 25.0f, 140, 1.5f); //(?,?,jari-jari,ketebalan)
+    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(?,?,jari-jari,ketebalan)
     glPopMatrix();
 
     // Pohon Kelapa (Refleksi)
@@ -281,7 +286,7 @@ void display() {
     glPushMatrix();
     glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 25.0f, 140, 1.5f); //(?,?,jari-jari,ketebalan)
+    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(?,?,jari-jari,ketebalan)
     glPopMatrix();
 
     // Pohon Kelapa
