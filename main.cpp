@@ -13,45 +13,76 @@ float leafAngle = 0.0f;
 bool leafDirection = true;
 
 //------------------------------------------ Pohon Kelapa --------------------------------------------------
-void batangKelapa(float x, float y, float height, float curve) {
-    glBegin(GL_TRIANGLE_STRIP);
-    for (int i = 0; i <= 20; i++) {
-        float t = (float)i / 20;
-        float xOffset = curve * t * (1.0f - t); // Melengkungkan batang
-        float xBase = x + xOffset;
-        float yBase = y + t * height;
-        glVertex2f(xBase - 5, yBase); // Kiri batang
-        glVertex2f(xBase + 5, yBase); // Kanan batang
+//void batangKelapa(float x, float y, float height, float curve) {
+//    glBegin(GL_TRIANGLE_STRIP);
+//    for (int i = 0; i <= 20; i++) {
+//        float t = (float)i / 20;
+//        float xOffset = curve * t * (1.0f - t); // Melengkungkan batang
+//        float xBase = x + xOffset;
+//        float yBase = y + t * height;
+//        glVertex2f(xBase - 5, yBase); // Kiri batang
+//        glVertex2f(xBase + 5, yBase); // Kanan batang
+//    }
+//    glEnd();
+//}
+
+void daunKelapa(float x, float y, float length, float angleOffset, int segments, float thickness) {
+    // Tambahkan beberapa garis sejajar untuk menambah ketebalan
+    for (float offset = -thickness; offset <= thickness; offset += thickness / 3) {
+        glBegin(GL_LINE_STRIP);
+        for (int i = 0; i <= segments; i++) {
+            float t = (float)i / segments;
+            float angle = angleOffset + (1.0f - t) * 0.5f * sin(leafAngle * 3.14159 / 180.0f); // Efek melambai
+            float xPos = x + t * length * cos(angle);
+            float yPos = y + t * length * sin(angle);
+            glVertex2f(xPos + offset * sin(angle), yPos - offset * cos(angle)); // Offset untuk menambah ketebalan
+        }
+        glEnd();
     }
-    glEnd();
 }
 
-void daunKelapa(float x, float y, float length, float angleOffset, int segments) {
-    glBegin(GL_LINE_STRIP);
-    for (int i = 0; i <= segments; i++) {
-        float t = (float)i / segments;
-        float angle = angleOffset + (1.0f - t) * 0.5f * sin(leafAngle * 3.14159 / 180.0f); // Efek melambai
-        float xPos = x + t * length * cos(angle);
-        float yPos = y + t * length * sin(angle);
-        glVertex2f(xPos, yPos);
-    }
+void pohon(float x, float y, float scale) {
+    // Batang pohon
+    glColor3f(0.55f, 0.27f, 0.07f); // Warna coklat
+    glBegin(GL_QUADS);
+    glVertex2f(x - 35 * scale, y - 103 * scale); // Kiri bawah
+    glVertex2f(x + 35 * scale, y - 103 * scale); // Kanan bawah
+    glVertex2f(x + 20 * scale, y + 20 * scale);  // Kanan atas
+    glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri atas
     glEnd();
-}
 
-void pohonKelapa(float x, float y) {
-    // Batang
-    glColor3ub(139, 69, 19);
-    batangKelapa(x, y, 150.0f, 20.0f); // Tinggi batang ditingkatkan menjadi 150.0f
+    glColor3f(0.55f, 0.27f, 0.07f);
+    glBegin(GL_QUADS);
+    glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri bawah
+    glVertex2f(x + 20 * scale, y + 20 * scale);  // Kanan bawah
+    glVertex2f(x + 20 * scale, y + 250 * scale); // Kanan atas
+    glVertex2f(x - 20 * scale, y + 250 * scale); // Kiri atas
+    glEnd();
 
     // Daun
     glColor3ub(34, 139, 34);
-    for (int i = 0; i < 5; i++) {
-        float angleOffset = (i * 72.0f - 90.0f) * 3.14159 / 180.0f; // Sudut daun tersebar
-        daunKelapa(x, y + 150, 90.0f, angleOffset, 20); // Daun lebih panjang
-        daunKelapa(x, y + 150, 80.0f, angleOffset + 0.1f, 20); // Tambahan daun lebih pendek
-        daunKelapa(x, y + 150, 70.0f, angleOffset - 0.1f, 20); // Tambahan daun lebih pendek
+    int leafCount = 18; // Jumlah daun utama lebih banyak
+    for (int i = 0; i < leafCount; i++) {
+        float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Sebar sudut lebih merata
+        daunKelapa(x, y + 100, 70.0f, angleOffset, 40, 3.0f); // Daun lebih panjang dan tebal
+        daunKelapa(x, y + 100, 60.0f, angleOffset + 0.1f, 40, 2.0f); // Tambahan daun lebih pendek dan lebih tipis //x, y + posisiY, panjangDaun
     }
 }
+//void pohonKelapa(float x, float y) {
+//    // Batang
+//    glColor3ub(139, 69, 19);
+//    batangKelapa(x, y, 150.0f, 20.0f); // Tinggi batang
+//
+//    // Daun
+//    glColor3ub(34, 139, 34);
+//    int leafCount = 18; // Jumlah daun utama lebih banyak
+//    for (int i = 0; i < leafCount; i++) {
+//        float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Sebar sudut lebih merata
+//        daunKelapa(x, y + 150, 70.0f, angleOffset, 40, 3.0f); // Daun lebih panjang dan tebal
+//        daunKelapa(x, y + 150, 60.0f, angleOffset + 0.1f, 40, 2.0f); // Tambahan daun lebih pendek dan lebih tipis
+//    }
+//}
+
 
 //------------------------------------------ Tumbleweed --------------------------------------------------
 void tumbleweed(float centerX, float centerY, float radius, int segments, float lineWidth) {
@@ -220,30 +251,30 @@ void display() {
 
 
     // Tumbleweed bawah (refleksi)
-    glColor3ub(105, 92, 59);
+    glColor3ub(105, 92, 59); //warna rgb
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(bx, -10, 0);
+    glTranslatef(bx, -10, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f);
+    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
 
-    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer
+    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (refleksi untuk objek setelah kode ini)
 
     // Tumbleweed
-    glColor3ub(0, 0, 0);
+    glColor3ub(0, 0, 0); //warna rgb
     glPushMatrix();
-    glTranslatef(bx, 55, 0);
+    glTranslatef(bx, 57, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f);
+    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
 
     // Pohon Kelapa
-    pohonKelapa(145.0f, -30.0f); //posisi pohon kelapa berdiri
+    pohon(140, 30, 0.4f); //posisi pohon kelapa berdiri
 
     // Update posisi tumbleweed
     angle -= 0.01;
-    bx += 0.1;
+    bx += 0.25;
     if (bx > 600)
         bx = -270;
     if (angle <= -360.0f)
