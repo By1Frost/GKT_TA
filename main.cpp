@@ -7,10 +7,36 @@
 double r = .2, s = .3;
 int i;
 float tx = 10;
-float bx = -270;
+float bx = -570;
 float angle = 0.0f;
 float leafAngle = 0.0f;
 bool leafDirection = true;
+
+//----------------------------------------------- Resolusi ------------------------------------------------------
+void reshape(int width, int height) {
+    glViewport(0, 0, width, height);
+
+    // Masuk ke mode proyeksi untuk mengatur ulang volume tampilan
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    // Hitung aspek rasio jendela
+    float aspect = (float)width / (float)height;
+
+    // Sesuaikan volume proyeksi ortografis
+    if (aspect >= 1.0f) {
+        // Lebar lebih besar dari tinggi
+        glOrtho(-250.0 * aspect, 250.0 * aspect, -250.0, 250.0, -1.0, 1.0);
+    }
+    else {
+        // Tinggi lebih besar dari lebar
+        glOrtho(-250.0, 250.0, -250.0 / aspect, 250.0 / aspect, -1.0, 1.0);
+    }
+
+    // Kembali ke mode modelview
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
 
 //------------------------------------------ Pohon Kelapa --------------------------------------------------
 void daunKelapa(float x, float y, float length, float angleOffset, int segments, float thickness) {
@@ -56,8 +82,6 @@ void pohon(float x, float y, float scale) {
     }
 }
 
-
-
 //------------------------------------------ Tumbleweed --------------------------------------------------
 void tumbleweed(float centerX, float centerY, float radius, int segments, float lineWidth) {
     glLineWidth(lineWidth); // Set ketebalan garis
@@ -94,12 +118,12 @@ void tumbleweed(float centerX, float centerY, float radius, int segments, float 
 }
 
 //------------------------------------------ Alas --------------------------------------------------
-void kotak() {
+void kotak(float left, float right, float bottom, float top) {
     glBegin(GL_POLYGON);
-    glVertex2i(-250, -250);
-    glVertex2i(250, -250);
-    glVertex2i(250, 85);
-    glVertex2i(-250, 85);
+    glVertex2f(left, bottom);
+    glVertex2f(right, bottom);
+    glVertex2f(right, top);
+    glVertex2f(left, top);
     glEnd();
 }
 
@@ -162,8 +186,8 @@ void danau(float centerX, float centerY, float radiusX, float radiusY) {
 
 //------------------------------------------ Display --------------------------------------------------
 void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // Clear buffer
     glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // Clear buffer
 
     // Matahari
     glColor3ub(255, 215, 0);
@@ -172,12 +196,20 @@ void display() {
     // Awan
     glPushMatrix();
     glTranslatef(tx, 0, 0);
+    awan(-450.0f, -20.0f);
+    awan(-370.0f, -65.0f);
+    awan(-310.0f, 0.0f);
     awan(-230.0f, -30.0f);
     awan(-150.0f, -70.0f);
     awan(-50.0f, -50.0f);
     awan(50.0f, -30.0f);
     awan(100.0f, -50.0f);
     awan(210.0f, -50.0f);
+    awan(250.0f, -20.0f);
+    awan(310.0f, 0.0f);
+    awan(370.0f, -65.0f);
+    awan(430.0f, -40.0f);
+
     glPopMatrix();
     tx += 0.1;
     if (tx > 250)
@@ -196,12 +228,12 @@ void display() {
 
     // Alas
     glColor3ub(210, 192, 145);
-    kotak();
+    kotak(-250 * 2, 250 * 2, -250, 85); // Diperluas untuk mencakup seluruh jendela
 
     // Danau
     glColor3ub(118, 249, 249);
-    float danauCenterX = 0.0f, danauCenterY = -70.0f;
-    float danauRadiusX = 150.0f, danauRadiusY = 100.0f;
+    float danauCenterX = 0.0f, danauCenterY = -90.0f;
+    float danauRadiusX = 300.0f, danauRadiusY = 100.0f;
     danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY);
 
     // Set Stencil Buffer untuk Refleksi
@@ -228,15 +260,15 @@ void display() {
     glColor3ub(105, 92, 59); //warna rgb
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(bx, -10, 0); //posisi tumbleweed
+    glTranslatef(bx, 20, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); //(?,?,?,ketebalan)
+    tumbleweed(0.0f, 0.0f, 25.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
 
     // Pohon Kelapa (Refleksi)
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(140, 67, 0);
+    glTranslatef(220, 60, 0);
     pohon(0, 0, 0.4f);
     glPopMatrix();
 
@@ -245,19 +277,19 @@ void display() {
     // Tumbleweed
     glColor3ub(0, 0, 0); //warna rgb
     glPushMatrix();
-    glTranslatef(bx, 57, 0); //posisi tumbleweed
+    glTranslatef(bx, 42, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); //(?,?,?,ketebalan)
+    tumbleweed(0.0f, 0.0f, 25.0f, 40, 1.5f); //(?,?,?,ketebalan)
     glPopMatrix();
 
     // Pohon Kelapa
-    pohon(140, 30, 0.4f); //posisi pohon kelapa berdiri
+    pohon(220, 30, 0.4f); //posisi pohon kelapa berdiri
 
     // Update posisi tumbleweed
     angle -= 0.01;
-    bx += 0.25;
+    bx += 1;
     if (bx > 600)
-        bx = -270;
+        bx = -570;
     if (angle <= -360.0f)
         angle += 360.0f;
 
@@ -286,11 +318,12 @@ int main(int argc, char** argv) {
     srand(time(0)); // Inisialisasi random seed
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
-    glutInitWindowSize(1354, 760);
+    glutInitWindowSize(1600, 900);
     glutCreateWindow("Pohon Kelapa dan Tumbleweed");
 
     init();
     glutDisplayFunc(display);
+    glutReshapeFunc(reshape); // Tambahkan callback reshape
     glutMainLoop();
 
     return 0;
