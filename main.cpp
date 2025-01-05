@@ -89,38 +89,36 @@ void pohon(float x, float y, float scale) {
 }
 
 //------------------------------------------ Tumbleweed --------------------------------------------------
-void tumbleweed(float centerX, float centerY, float radius, int segments, float lineWidth) {
-    glLineWidth(lineWidth); // Set ketebalan garis
-    glBegin(GL_LINES);
+void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) {
+    srand(42); // Seed random generator untuk hasil yang konsisten
+    glLineWidth(lineWidth);
 
-    for (int i = 0; i < segments; i++) {
-        float angle = (i * 2.0f * 3.14159f) / segments;
-        float xStart = centerX;
-        float yStart = centerY;
-
-        float xCurrent = xStart;
-        float yCurrent = yStart;
-
-        int subSegments = 6;
-        for (int j = 0; j < subSegments; j++) {
-            float segmentLength = radius / subSegments;
-            float offsetAngle = ((float)rand() / RAND_MAX - 0.5f) * (3.14159f / 4);
-            angle += offsetAngle;
-
-            float xNext = xCurrent + cos(angle) * segmentLength;
-            float yNext = yCurrent + sin(angle) * segmentLength;
-
-            glVertex2f(xCurrent, yCurrent);
-            glVertex2f(xNext, yNext);
-
-            xCurrent = xNext;
-            yCurrent = yNext;
-        }
+    // Lingkaran utama tumbleweed
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 360; i += 5) {
+        float theta = i * 3.14159f / 180.0f;
+        float cx = x + radius * cos(theta);
+        float cy = y + radius * sin(theta);
+        glVertex2f(cx, cy);
     }
-
     glEnd();
-    glLineWidth(1.0f);
+
+    // Jari-jari tumbleweed dengan variasi acak
+    glBegin(GL_LINES);
+    for (int i = 0; i < numSpokes; i++) {
+        float angle = (float)(rand() % 360) * 3.14159f / 180.0f; // Sudut acak
+        float spokeRadius = radius + (rand() % 20 - 10);         // Panjang acak (±10)
+        float spokeX = x + spokeRadius * cos(angle);
+        float spokeY = y + spokeRadius * sin(angle);
+
+        // Titik awal selalu di pusat lingkaran
+        glVertex2f(x, y);
+        // Titik akhir acak di sekitar lingkaran
+        glVertex2f(spokeX, spokeY);
+    }
+    glEnd();
 }
+
 
 //------------------------------------------ Alas --------------------------------------------------
 void kotak(float left, float right, float bottom, float top) {
@@ -291,13 +289,11 @@ void display() {
     pohon(220, 30, 0.4f); //posisi pohon kelapa berdiri
 
     // Update posisi tumbleweed
-    angle -= 0.01;
+    angle -= 0.5;
     bx += 0.5;
     jumpPhase += jumpSpeed; // Perbarui fase lompatan
     by = 42 + jumpAmplitude * fabs(sin(jumpPhase)); // Gerakan y dengan lompatan sinus
 
-    angle -= 0.01;
-    bx += 0.5;
     if (bx > 600)
         bx = -570;
     if (angle <= -360.0f)
