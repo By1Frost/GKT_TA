@@ -114,12 +114,14 @@ void danau(float centerX, float centerY, float radiusX, float radiusY) {
 
 //------------------------------------------ Display --------------------------------------------------
 void display() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // Clear buffer
     glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
 
+    // Matahari
     glColor3ub(255, 215, 0);
     matahari(0, 200);
 
+    // Awan
     glPushMatrix();
     glTranslatef(tx, 0, 0);
     awan(-230.0f, -30.0f);
@@ -133,6 +135,7 @@ void display() {
     if (tx > 250)
         tx = -250;
 
+    // Gunung
     glColor3ub(170, 153, 111);
     gunung(190.0f, 200.0f, 230.0f, 400.0f, 0.5f);
 
@@ -143,35 +146,59 @@ void display() {
     glColor3ub(170, 153, 111);
     gunung(-200.0f, 200.0f, 230.0f, 400.0f, 0.5f);
 
+    // Alas
     glColor3ub(210, 192, 145);
     kotak();
 
+    // Danau
     glColor3ub(118, 249, 249);
-    danau(0.0f, -70.0f, 150.0f, 100.0f);
+    float danauCenterX = 0.0f, danauCenterY = -70.0f;
+    float danauRadiusX = 150.0f, danauRadiusY = 100.0f;
+    danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY);
+
+    // Set Stencil Buffer untuk Refleksi
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF); // Selalu tulis ke stencil buffer
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Tulis ke stencil buffer jika tes berhasil
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Nonaktifkan penggambaran ke layar
+
+    // Gambarkan bentuk danau ke stencil buffer
+    glBegin(GL_POLYGON);
+    for (float angle = 0.0f; angle <= 2 * 3.14159f; angle += 0.1f) {
+        float x = danauCenterX + danauRadiusX * cos(angle);
+        float y = danauCenterY + danauRadiusY * sin(angle);
+        glVertex2f(x, y);
+    }
+    glEnd();
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Aktifkan kembali penggambaran ke layar
+    glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
+
+    // Tumbleweed bawah (refleksi)
+    glColor3ub(105, 92, 59);
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f);
+    glTranslatef(bx, -10, 0);
+    glRotatef(angle, 0.0f, 0.0f, 1.0f);
+    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f);
+    glPopMatrix();
+
+    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer
 
     // Tumbleweed atas
-    glColor3ub(0, 0, 0); //warna tumbleweed
+    glColor3ub(0, 0, 0);
     glPushMatrix();
     glTranslatef(bx, 55, 0);
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); // Tumbleweed atas (???, ???, ???, ketebalan)
+    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f);
     glPopMatrix();
 
-    // Tumbleweed bawah (refleksi)
-    glColor3ub(105, 92, 59); //warna tumbleweed
-    glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f); // Refleksi pada sumbu Y
-    glTranslatef(bx, -10, 0);
-    glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 20.0f, 40, 1.5f); // Tumbleweed bawah (???, ???, ???, ketebalan)
-    glPopMatrix();
-
-    angle -= 0.01; // Rotasi lebih lambat
+    // Update posisi tumbleweed
+    angle -= 0.01;
     bx += 0.1;
-
     if (bx > 600)
         bx = -270;
-
     if (angle <= -360.0f)
         angle += 360.0f;
 
@@ -182,14 +209,15 @@ void display() {
 void init() {
     glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
     glOrtho(-250.0, 250.0, -250.0, 250.0, -1.0, 1.0);
+    glEnable(GL_STENCIL_TEST); // Aktifkan stencil buffer
 }
 
 int main(int argc, char** argv) {
     srand(time(0)); // Inisialisasi random seed
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(1354, 760);
-    glutCreateWindow("Tumbleweed");
+    glutCreateWindow("Tumbleweed Refleksi di Danau");
 
     init();
     glutDisplayFunc(display);

@@ -6,11 +6,13 @@ C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(109,17): warning C4244:
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(118,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(118,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(118,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(132,11): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(169,14): warning C4305: '-=': truncation from 'double' to 'float'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(170,11): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(183,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(183,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(183,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(188,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(134,11): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(168,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(169,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(198,14): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(199,11): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(210,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(210,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(210,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(216,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   gkt_tubes.vcxproj -> C:\Users\enigm\source\repos\gkt_tubes\x64\Debug\gkt_tubes.exe
