@@ -11,17 +11,17 @@ C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(111,22): warning C4244:
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(112,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(116,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(117,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(186,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(187,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(188,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(196,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(196,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(196,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(221,11): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(195,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(195,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(195,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(220,11): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(254,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(255,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(256,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(299,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(322,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(322,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(322,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(328,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(298,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,54): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,39): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(321,24): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+C:\Users\enigm\source\repos\gkt_tubes\gkt_tubes\main.cpp(327,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   gkt_tubes.vcxproj -> C:\Users\enigm\source\repos\gkt_tubes\x64\Debug\gkt_tubes.exe

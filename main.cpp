@@ -113,8 +113,8 @@ void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) 
 
         // Titik awal selalu di sekitar lingkaran (bukan hanya di pusat)
         float baseRadius = radius / 2 + (rand() % (int)(radius / 2));
-        float baseX = x + baseRadius * cos(angle + (rand() % 20 - 10) * 0.1f);
-        float baseY = y + baseRadius * sin(angle + (rand() % 20 - 10) * 0.1f);
+        float baseX = x + baseRadius * cos(angle + (rand() % 20 - 5) * 0.1f);
+        float baseY = y + baseRadius * sin(angle + (rand() % 20 - 5) * 0.1f);
 
         // Gambar garis dari titik acak di dalam lingkaran ke ujung acak
         glVertex2f(baseX, baseY);
@@ -122,7 +122,6 @@ void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) 
     }
     glEnd();
 }
-
 
 //------------------------------------------ Alas --------------------------------------------------
 void kotak(float left, float right, float bottom, float top) {
@@ -305,9 +304,9 @@ void display() {
 
     // Gerakan daun
     if (leafDirection)
-        leafAngle += 0.5f;
+        leafAngle += 0.5f; //kecepatan gerakan daun
     else
-        leafAngle -= 0.5f;
+        leafAngle -= 0.5f; //kecepatan gerakan daun
 
     if (leafAngle > 15.0f)
         leafDirection = false;
