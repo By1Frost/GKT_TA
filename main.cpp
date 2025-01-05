@@ -1,16 +1,16 @@
 #include <windows.h>
 #include <GL/glut.h>
 #include <stdlib.h>
-#include <math.h>
-#include <time.h> // Untuk fungsi random
+#include <math.h> // untuk penghitungan matematis (sin cos)
+#include <time.h> // untuk fungsi random
 
-double r = .2, s = .3;
+double r = .2, s = .3; //r = jari-jari komponen awan; s = jari-jari lingkaran matahari(radius)
 int i;
-float tx = 10;
-float bx = -570;
-float angle = 0.0f;
-float leafAngle = 0.0f;
-bool leafDirection = true;
+float tx = 10; //Variabel untuk awan bergerak ke kanan
+float bx = -570; //variabel untuk tumbleweed bergerak ke kanan
+float angle = 0.0f; //varibel untuk menyimpan sudut
+float leafAngle = 0.0f; //variabel untuk menyimpan sudut daun pohon
+bool leafDirection = true; //varibel untuk menentukan arah gerakan daun
 
 // Variabel untuk gerakan tumbleweed melompat
 float by = 42;           // Posisi y awal tumbleweed
@@ -19,174 +19,187 @@ float jumpAmplitude = 40.0f; // Amplitudo lompatan (tinggi lompatan)
 float jumpSpeed = 0.01f;  // Kecepatan perubahan fase
 
 //----------------------------------------------- Resolusi ------------------------------------------------------
-void reshape(int width, int height) {
-    glViewport(0, 0, width, height);
+void reshape(int width, int height) { //memungkinkan konten pada layar tetap proporsional, meskipun ukuran jendela diubah oleh pengguna.
+    glViewport(0, 0, width, height); //area opengl,menggambar 0,0(sudut kiri bawah) > width,height(sudut kanan atas/lebar dan tinggi window)
 
-    // Masuk ke mode proyeksi untuk mengatur ulang volume tampilan
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+    // Masuk ke mode proyeksi untuk mengatur ulang volume tampilan 
+    glMatrixMode(GL_PROJECTION); //mengatur cara OpenGL memproyeksikan objek 3D ke layar 2D.
+    glLoadIdentity(); //mengatur ulang matriks proyeksi ke bentuk identitas (menghapus transformasi sebelumnya)
 
-    // Hitung aspek rasio jendela
+    // Hitung aspek rasio window
     float aspect = (float)width / (float)height;
 
-    // Sesuaikan volume proyeksi ortografis
-    if (aspect >= 1.0f) {
-        // Lebar lebih besar dari tinggi
+    // Mengatur volume tampilan ortografis (tampilan tanpa distorsi perspektif)
+    if (aspect >= 1.0f) { //jika lebar lebih dari tinggi (yang kami pakai)
         glOrtho(-250.0 * aspect, 250.0 * aspect, -250.0, 250.0, -1.0, 1.0);
     }
-    else {
-        // Tinggi lebih besar dari lebar
+    else { //jika tinggi lebih dari lebar
         glOrtho(-250.0, 250.0, -250.0 / aspect, 250.0 / aspect, -1.0, 1.0);
     }
 
     // Kembali ke mode modelview
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW); //Beralih kembali ke mode modelview, di mana transformasi model dan kamera diterapkan.
+    glLoadIdentity(); //mengatur ulang matriks proyeksi ke bentuk identitas (menghapus transformasi sebelumnya)
 }
 
-//------------------------------------------ Pohon Kelapa --------------------------------------------------
-void daunKelapa(float x, float y, float length, float angleOffset, int segments, float thickness) {
+//------------------------------------------ Pohon --------------------------------------------------
+void daunPohon(float x, float y, float length, float angleOffset, int segments, float thickness) { //membuat daun pohon
+    //x,y = koordinat awal daun; length = panjang daun; angleOffset = sudut awal daun relatif terhadap sumbu horizontal; segments = jumlah segmen untuk membentuk lengkungan; thickness = ketebalan daun
     // Tambahkan beberapa garis sejajar untuk menambah ketebalan
-    for (float offset = -thickness; offset <= thickness; offset += thickness / 3) {
-        glBegin(GL_LINE_STRIP);
-        for (int i = 0; i <= segments; i++) {
-            float t = (float)i / segments;
-            float angle = angleOffset + (1.0f - t) * 0.5f * sin(leafAngle * 3.14159 / 180.0f); // Efek melambai
+    for (float offset = -thickness; offset <= thickness; offset += thickness / 3) { //Iterasi beberapa garis dengan offset horizontal dan vertikal untuk menciptakan efek tebal
+        glBegin(GL_LINE_STRIP); //menggambar garis
+        for (int i = 0; i <= segments; i++) { //iterasi setiap segmen
+            float t = (float)i / segments; //proporsi panjang daun
+            float angle = angleOffset + (1.0f - t) * 0.5f * sin(leafAngle * 3.14159 / 180.0f); // mengatur arah melengkung daun dengan efek "melambai" yang kecil
             float xPos = x + t * length * cos(angle);
             float yPos = y + t * length * sin(angle);
+            //xPos,yPos = Posisi setiap titik dihitung menggunakan trigonometri berdasarkan panjang daun dan sudutnya.
             glVertex2f(xPos + offset * sin(angle), yPos - offset * cos(angle)); // Offset untuk menambah ketebalan
         }
-        glEnd();
+        glEnd();//selesai menggambar daun
     }
 }
 
-void pohon(float x, float y, float scale, float trunkColor[4], float leafColor[4]) {
+void pohon(float x, float y, float scale, float trunkColor[4], float leafColor[4]) { //membuat pohon (beserta daunnya)
+    //x,y = titik berdiri pohon; scale = skala pohon; trunkColor = warna batang pohon; leafColor = warna daun
     // Batang pohon
     glColor4fv(trunkColor); // Warna batang
-    glBegin(GL_QUADS);
+    glBegin(GL_QUADS); //menggambar persegi
     glVertex2f(x - 35 * scale, y - 103 * scale); // Kiri bawah
     glVertex2f(x + 35 * scale, y - 103 * scale); // Kanan bawah
     glVertex2f(x + 20 * scale, y + 20 * scale);  // Kanan atas
     glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri atas
-    glEnd();
+    glEnd(); //selesai menggambar persegi
 
-    glBegin(GL_QUADS);
-    glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri bawah
-    glVertex2f(x + 20 * scale, y + 20 * scale);  // Kanan bawah
-    glVertex2f(x + 20 * scale, y + 250 * scale); // Kanan atas
-    glVertex2f(x - 20 * scale, y + 250 * scale); // Kiri atas
+    glBegin(GL_QUADS); 
+    glVertex2f(x - 20 * scale, y + 20 * scale);
+    glVertex2f(x + 20 * scale, y + 20 * scale);
+    glVertex2f(x + 20 * scale, y + 250 * scale);
+    glVertex2f(x - 20 * scale, y + 250 * scale);
     glEnd();
 
     // Daun
     glColor4fv(leafColor); // Warna daun
-    int leafCount = 18; // Jumlah daun utama lebih banyak
-    for (int i = 0; i < leafCount; i++) {
-        float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Sebar sudut lebih merata
-        daunKelapa(x, y + 100, 70.0f, angleOffset, 40, 3.0f); // Daun lebih panjang dan tebal
-        daunKelapa(x, y + 100, 60.0f, angleOffset + 0.1f, 40, 2.0f); // Tambahan daun lebih pendek dan lebih tipis //x, y + posisiY, panjangDaun
+    int leafCount = 18; // Jumlah daun
+    for (int i = 0; i < leafCount; i++) { //itersai untuk setiap jumlah daun
+        float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Lebar sudut dihitung dari (0-360)
+        daunPohon(x, y + 100, 70.0f, angleOffset, 40, 3.0f); //pemanggilan daunPohon
+        daunPohon(x, y + 100, 60.0f, angleOffset + 0.1f, 40, 2.0f);
+        //x,y = koordinat awal daun; length = panjang daun; angleOffset = sudut awal daun relatif terhadap sumbu horizontal; segments = jumlah segmen untuk membentuk lengkungan; thickness = ketebalan 
     }
 }
 
 //------------------------------------------ Tumbleweed --------------------------------------------------
-void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) {
-    srand(42); // Seed random generator untuk hasil yang konsisten
-    glLineWidth(lineWidth);
+void tumbleweed(float x, float y, float radius, int numSpokes, float lineWidth) { //menciptakan tumbleweed (rumput mati)
+    // x, y = koordinat titik pusat; radius = panjang jari-jari; numSpokes = jumlah jari-jari (garis acak); lineWidth = tebal jari-jari 
+    srand(42); //generator angka acak, karena jari-jari yang akan dibuat akan beracak-acak
+    glLineWidth(lineWidth); //Mengatur ketebalan garis
 
     // Lingkaran utama tumbleweed
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < 360; i += 5) {
-        float theta = i * 3.14159f / 180.0f;
-        float cx = x + radius * cos(theta);
-        float cy = y + radius * sin(theta);
-        glVertex2f(cx, cy);
+    glBegin(GL_LINE_LOOP); //menggambar lingkaran utama
+    for (int i = 0; i < 360; i += 5) { //Iterasi dari 0 hingga 360 derajat dengan langkah 5 derajat:
+        float theta = i * 3.14159f / 180.0f; //konversi derajat ke radian
+        float cx = x + radius * cos(theta); //menciptakan titik x baru
+        float cy = y + radius * sin(theta); //menciptakan titik y baru
+        glVertex2f(cx, cy); //menciptakan titik koordinat baru pembentukan keliling lingkaran
     }
-    glEnd();
+    glEnd();//selesai gambar lingkaran
 
     // Jari-jari tumbleweed dengan variasi acak
-    glBegin(GL_LINES);
-    for (int i = 0; i < numSpokes; i++) {
-        float angle = (float)(rand() % 360) * 3.14159f / 180.0f; // Sudut acak
-        float spokeRadius = radius + (rand() % 20 - 10);         // Panjang acak (±10)
-        float spokeX = x + spokeRadius * cos(angle);
-        float spokeY = y + spokeRadius * sin(angle);
+    glBegin(GL_LINES); //menggambar garis
+    for (int i = 0; i < numSpokes; i++) { //iterasi untuk setiap jumlah jari-jari
+        float angle = (float)(rand() % 360) * 3.14159f / 180.0f; // Sudut acak antara 0-360, acaknya dari  fungsi rand()
+        float spokeRadius = radius + (rand() % 20 - 10); // Panjang garis dihitung dari radius lingkaran dengan panjang acak (±10)
+        float spokeX = x + spokeRadius * cos(angle); //koordinat x titik akhir garis          
+        float spokeY = y + spokeRadius * sin(angle); //koordinat y titik akhir garis
 
         // Titik awal selalu di sekitar lingkaran (bukan hanya di pusat)
-        float baseRadius = radius / 2 + (rand() % (int)(radius / 2));
-        float baseX = x + baseRadius * cos(angle + (rand() % 20 - 5) * 0.1f);
-        float baseY = y + baseRadius * sin(angle + (rand() % 20 - 5) * 0.1f);
+        float baseRadius = radius / 2 + (rand() % (int)(radius / 2)); 
+        //baseRadius = Jarak titik awal garis dari pusat lingkaran (acak)
+        float baseX = x + baseRadius * cos(angle + (rand() % 20 - 5) * 0.1f); //Koordinat titik awal x garis (acak)
+        float baseY = y + baseRadius * sin(angle + (rand() % 20 - 5) * 0.1f); //Koordinat titik awal y garis (acak)
 
         // Gambar garis dari titik acak di dalam lingkaran ke ujung acak
         glVertex2f(baseX, baseY);
         glVertex2f(spokeX, spokeY);
     }
-    glEnd();
+    glEnd(); //selesai gambar garis
 }
 
-//------------------------------------------ Alas --------------------------------------------------
-void kotak(float left, float right, float bottom, float top) {
-    glBegin(GL_POLYGON);
-    glVertex2f(left, bottom);
+//------------------------------------------ Tanah --------------------------------------------------
+void kotak(float left, float right, float bottom, float top) { //menciptakan tanah
+    //left = panjang kiri; right = panjang kanan; bottom = panjang kanan; top = panjang atas
+    glBegin(GL_POLYGON); //menggambar poligon (segi banyak/bebas)
+    glVertex2f(left, bottom); //menggambar garis
     glVertex2f(right, bottom);
     glVertex2f(right, top);
     glVertex2f(left, top);
-    glEnd();
+    glEnd(); //selesai gambar poligon
 }
 
 //------------------------------------------ Matahari --------------------------------------------------
-void matahari(double x, double y) {
-    glBegin(GL_TRIANGLE_FAN);
-    for (i = 0; i < 360; i++) {
-        x = x + cos((i * 3.14) / 180) * s;
-        y = y + sin((i * 3.14) / 180) * s;
-        glVertex2d(x, y);
+void matahari(double x, double y) { //membuat matahari
+    //x,y koordinat pusat; double merupakan tipe data untuk bilangan pecahan
+    glBegin(GL_TRIANGLE_FAN); //menggambar sebuah bentuk yang terdiri dari beberapa segitiga yang berbagi titik pusat
+    //Titik pusat adalah pusat lingkaran matahari
+    //Titik-titik lainnya membentuk keliling lingkaran
+    for (i = 0; i < 360; i++) { //iterasi 360 derajat
+        x = x + cos((i * 3.14) / 180) * s; //menghitung koordinat x baru
+        y = y + sin((i * 3.14) / 180) * s; //menghitung koordinat y baru
+        glVertex2d(x, y); //titik baru untuk membuat keliling lingkaran
     }
-    glEnd();
+    glEnd();//selesai menggambar matahari
 }
 
 //------------------------------------------ Awan --------------------------------------------------
-void bulat(double x, double y) {
+void bulat(double x, double y) { //komponen untuk membuat awan
     glBegin(GL_TRIANGLE_FAN);
     for (i = 0; i < 360; i++) {
         x = x + cos((i * 3.14) / 180) * r;
         y = y + sin((i * 3.14) / 180) * r;
         glVertex2d(x, y);
     }
-    glEnd();
+    glEnd();//selesai menggambar awan
 }
 
-void awan(float tx, float ty) {
-    glColor3ub(255, 255, 255);
-    bulat(tx + 0, ty + 250);
+void awan(float tx, float ty) { //membuat awan
+    glColor3ub(255, 255, 255); //warna rgb (putih)
+    bulat(tx + 0, ty + 250); //tx posisi x awan; ty posisi y awan
     bulat(tx + 15, ty + 245);
     bulat(tx + 10, ty + 240);
     bulat(tx + -2, ty + 243);
 }
 
 //------------------------------------------ Gunung --------------------------------------------------
-void gunung(float tx, float ty, float t, float l, float scale) {
-    glBegin(GL_TRIANGLES);
+void gunung(float tx, float ty, float t, float l, float scale) { //membuat gunung
+    //tx = titik x puncak gunung; ty = titik y puncak gunung; t = tinggi gunung; l = lebar gunung; scale = skala gunung
+    glBegin(GL_TRIANGLES); //menggambar segitiga
+    //menerapkan skala pada tinggi dan lebar
     t *= scale;
     l *= scale;
-    float xA = tx - l / 2, yA = ty - t;
-    float xB = tx, yB = ty;
-    float xC = tx + l / 2, yC = ty - t;
+    //menghitung koordinat titik segitiga
+    float xA = tx - l / 2, yA = ty - t; //kiri bawah
+    float xB = tx, yB = ty; //puncak
+    float xC = tx + l / 2, yC = ty - t; //kanan bawah
 
+    //menambakan titik lalu menyambungkannya (menjadi garis)
     glVertex2f(xA, yA);
     glVertex2f(xB, yB);
     glVertex2f(xC, yC);
 
-    glEnd();
+    glEnd(); //selesai menggambar gunung
 }
 
 //------------------------------------------ Danau --------------------------------------------------
-void danau(float centerX, float centerY, float radiusX, float radiusY) {
-    glBegin(GL_POLYGON);
-    for (float angle = 0.0f; angle <= 2 * 3.14159f; angle += 0.1f) {
-        float x = centerX + radiusX * cos(angle);
-        float y = centerY + radiusY * sin(angle);
-        glVertex2f(x, y);
+void danau(float centerX, float centerY, float radiusX, float radiusY) { //membuat danau
+    //centerX,centerY = titik pusat; radiusX,radiusY = jari-jari elips pada sumbu X dan Y
+    glBegin(GL_POLYGON); //menggambar poligon (segi banyak/bebas)
+    for (float angle = 0.0f; angle <= 2 * 3.14159f; angle += 0.1f) { //iterasi menggambar elips
+        float x = centerX + radiusX * cos(angle); //koordinat x baru
+        float y = centerY + radiusY * sin(angle); //koordinat y baru
+        glVertex2f(x, y);//menambakan titik lalu menyambungkannya (menjadi garis)
     }
-    glEnd();
+    glEnd(); //selesai gambar danau
 }
 
 //------------------------------------------ Display --------------------------------------------------
@@ -218,7 +231,6 @@ void display() {
     awan(310.0f, 0.0f);
     awan(370.0f, -65.0f);
     awan(430.0f, -40.0f);
-
     glPopMatrix();
     tx += 0.1;
     if (tx > 250)
