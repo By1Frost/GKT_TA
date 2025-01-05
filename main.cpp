@@ -13,19 +13,6 @@ float leafAngle = 0.0f;
 bool leafDirection = true;
 
 //------------------------------------------ Pohon Kelapa --------------------------------------------------
-//void batangKelapa(float x, float y, float height, float curve) {
-//    glBegin(GL_TRIANGLE_STRIP);
-//    for (int i = 0; i <= 20; i++) {
-//        float t = (float)i / 20;
-//        float xOffset = curve * t * (1.0f - t); // Melengkungkan batang
-//        float xBase = x + xOffset;
-//        float yBase = y + t * height;
-//        glVertex2f(xBase - 5, yBase); // Kiri batang
-//        glVertex2f(xBase + 5, yBase); // Kanan batang
-//    }
-//    glEnd();
-//}
-
 void daunKelapa(float x, float y, float length, float angleOffset, int segments, float thickness) {
     // Tambahkan beberapa garis sejajar untuk menambah ketebalan
     for (float offset = -thickness; offset <= thickness; offset += thickness / 3) {
@@ -68,20 +55,7 @@ void pohon(float x, float y, float scale) {
         daunKelapa(x, y + 100, 60.0f, angleOffset + 0.1f, 40, 2.0f); // Tambahan daun lebih pendek dan lebih tipis //x, y + posisiY, panjangDaun
     }
 }
-//void pohonKelapa(float x, float y) {
-//    // Batang
-//    glColor3ub(139, 69, 19);
-//    batangKelapa(x, y, 150.0f, 20.0f); // Tinggi batang
-//
-//    // Daun
-//    glColor3ub(34, 139, 34);
-//    int leafCount = 18; // Jumlah daun utama lebih banyak
-//    for (int i = 0; i < leafCount; i++) {
-//        float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Sebar sudut lebih merata
-//        daunKelapa(x, y + 150, 70.0f, angleOffset, 40, 3.0f); // Daun lebih panjang dan tebal
-//        daunKelapa(x, y + 150, 60.0f, angleOffset + 0.1f, 40, 2.0f); // Tambahan daun lebih pendek dan lebih tipis
-//    }
-//}
+
 
 
 //------------------------------------------ Tumbleweed --------------------------------------------------
