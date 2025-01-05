@@ -198,9 +198,6 @@ void display() {
     float trunkColor[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 1.0f }; // Warna batang coklat
     float leafColor[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 1.0f };  // Warna daun hijau
 
-    float trunkColorReflection[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 0.25f }; // Transparansi batang refleksi
-    float leafColorReflection[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 0.25f };  // Transparansi daun refleksi
-
     // Matahari
     glColor3ub(255, 215, 0);
     matahari(0, 200);
@@ -263,13 +260,53 @@ void display() {
     }
     glEnd();
 
+//=================================== REFLEKSI =================================================
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Aktifkan kembali penggambaran ke layar
     glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
 
-//=================================== REFLEKSI =================================================
-    // Tumbleweed (refleksi)
-    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 0.35f); // Warna dengan transparansi (rgba)
+    // Refleksi Awan
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f);
+    glTranslatef(tx, 0, 0); // Terapkan transformasi horizontal
+    awan(-370.0f, -65.0f);
+    awan(-150.0f, -70.0f);
+    awan(370.0f, -65.0f);
+    glPopMatrix();
+
+    // Refleksi Gunung
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f); // Flip vertikal
+    glTranslatef(0, 400.0f, 0); // Sesuaikan posisi y refleksi
+    glColor4f(170 / 255.0f, 153 / 255.0f, 111 / 255.0f, 1.0f); // Transparansi gunung
+    gunung(190.0f, -200.0f, 230.0f, 400.0f, 0.5f);
+
+    glColor4f(194 / 255.0f, 178 / 255.0f, 128 / 255.0f, 1.0f);
+    gunung(-50.0f, -200.0f, 230.0f, 400.0f, 0.5f);
+    gunung(60.0f, -200.0f, 230.0f, 400.0f, 0.5f);
+
+    glColor4f(170 / 255.0f, 153 / 255.0f, 111 / 255.0f, 1.0f);
+    gunung(-200.0f, -200.0f, 230.0f, 400.0f, 0.5f);
+    glPopMatrix();
+
+    // Refleksi Matahari
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f);
+    glTranslatef(0, -2 * 90.0f, 0); // Sesuaikan posisi y refleksi
+    glColor4f(255 / 255.0f, 215 / 255.0f, 0 / 255.0f, 1.0f); // Transparansi matahari
+    matahari(0, -200);
+    glPopMatrix();
+
+    // Refleksi Tanah
+    glPushMatrix();
+    glScalef(1.0f, -1.0f, 1.0f);
+    glTranslatef(0, 170.0f, 0); // Sesuaikan posisi y refleksi
+    glColor4f(210 / 255.0f, 192 / 255.0f, 145 / 255.0f, 1.0f); // Transparansi tanah
+    kotak(-250 * 2, 250 * 2, -250, -85);
+    glPopMatrix();
+
+    //Tumbleweed (refleksi)
+    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); // Warna dengan transparansi (rgba)
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(bx, by, 0); //posisi tumbleweed
@@ -281,11 +318,17 @@ void display() {
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(220, 60, 0);
-    pohon(0, 0, 0.4f, trunkColorReflection, leafColorReflection);
+    pohon(0, 0, 0.4f, trunkColor, leafColor);
     glPopMatrix();
 
-//=================================== ORIGINAL =================================================
+    // Danau
+    glPushMatrix();
+    glColor4f(118 / 255.0f, 249 / 255.0f, 249 / 255.0f, 0.5f);
+    danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY);
+    glPopMatrix();
+
     glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop danau untuk objek setelah kode ini dimatikan)
+//=================================== ORIGINAL =================================================
 
     // Tumbleweed
     glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); // Warna dengan transparansi (rgba)
