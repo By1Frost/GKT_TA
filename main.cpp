@@ -60,9 +60,9 @@ void daunKelapa(float x, float y, float length, float angleOffset, int segments,
     }
 }
 
-void pohon(float x, float y, float scale) {
+void pohon(float x, float y, float scale, float trunkColor[4], float leafColor[4]) {
     // Batang pohon
-    glColor3f(0.55f, 0.27f, 0.07f); // Warna coklat
+    glColor4fv(trunkColor); // Warna batang
     glBegin(GL_QUADS);
     glVertex2f(x - 35 * scale, y - 103 * scale); // Kiri bawah
     glVertex2f(x + 35 * scale, y - 103 * scale); // Kanan bawah
@@ -70,7 +70,6 @@ void pohon(float x, float y, float scale) {
     glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri atas
     glEnd();
 
-    glColor3f(0.55f, 0.27f, 0.07f);
     glBegin(GL_QUADS);
     glVertex2f(x - 20 * scale, y + 20 * scale);  // Kiri bawah
     glVertex2f(x + 20 * scale, y + 20 * scale);  // Kanan bawah
@@ -79,7 +78,7 @@ void pohon(float x, float y, float scale) {
     glEnd();
 
     // Daun
-    glColor3ub(34, 139, 34);
+    glColor4fv(leafColor); // Warna daun
     int leafCount = 18; // Jumlah daun utama lebih banyak
     for (int i = 0; i < leafCount; i++) {
         float angleOffset = (i * 360.0f / leafCount - 90.0f) * 3.14159 / 180.0f; // Sebar sudut lebih merata
@@ -195,6 +194,13 @@ void display() {
     glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // Clear buffer
 
+    // Warna batang dan daun
+    float trunkColor[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 1.0f }; // Warna batang coklat
+    float leafColor[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 1.0f };  // Warna daun hijau
+
+    float trunkColorReflection[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 0.25f }; // Transparansi batang refleksi
+    float leafColorReflection[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 0.25f };  // Transparansi daun refleksi
+
     // Matahari
     glColor3ub(255, 215, 0);
     matahari(0, 200);
@@ -261,6 +267,7 @@ void display() {
     glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
 
+//=================================== REFLEKSI =================================================
     // Tumbleweed (refleksi)
     glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 0.35f); // Warna dengan transparansi (rgba)
     glPushMatrix();
@@ -271,13 +278,13 @@ void display() {
     glPopMatrix();
 
     // Pohon Kelapa (Refleksi)
-    glColor4f(0.55f, 0.27f, 0.07f, 0.25f); // Transparansi batang pohon
     glPushMatrix();
     glScalef(1.0f, -1.0f, 1.0f);
     glTranslatef(220, 60, 0);
-    pohon(0, 0, 0.4f);
+    pohon(0, 0, 0.4f, trunkColorReflection, leafColorReflection);
     glPopMatrix();
 
+//=================================== ORIGINAL =================================================
     glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop danau untuk objek setelah kode ini dimatikan)
 
     // Tumbleweed
@@ -289,7 +296,7 @@ void display() {
     glPopMatrix();
 
     // Pohon Kelapa
-    pohon(220, 30, 0.4f); //posisi pohon kelapa berdiri
+    pohon(220, 30, 0.4f, trunkColor, leafColor);
 
     // Update posisi tumbleweed
     angle -= 0.5;
