@@ -203,22 +203,27 @@ void danau(float centerX, float centerY, float radiusX, float radiusY) { //membu
 }
 
 //------------------------------------------ Display --------------------------------------------------
-void display() {
-    glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
+void display() { //mulai menggambar
+    glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0); //Mengatur warna latar belakang (rgba) (warna biru langit)
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // Clear buffer
+    //glClear(mask) = Membersihkan atau mereset isi dari buffer tertentu, seperti buffer warna, buffer kedalaman (depth buffer), atau buffer stencil
+    // dalam hal ini ada dua buffer dan digabungkan menjadi satu karena adanya operator bitwise OR (color buffer dan stencil buffer dibersihkan dalam satu pemanggilan)
+    
+    //GL_COLOR_BUFFER_BIT = Membersihkan color buffer (buffer warna), sehingga seluruh tampilan diganti dengan warna latar belakang yang telah ditentukan oleh glClearColor
+    //GL_STENCIL_BUFFER_BIT = Membersihkan stencil buffer, yang digunakan untuk operasi seperti masking atau pengaturan area rendering tertentu
 
-    // Warna batang dan daun
-    float trunkColor[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 1.0f }; // Warna batang coklat
-    float leafColor[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 1.0f };  // Warna daun hijau
+    // deklarasi warna batang pohon dan daun pohon
+    float trunkColor[4] = { 140 / 255.0f, 69 / 255.0f, 18 / 255.0f, 1.0f }; // Warna batang coklat (rgba)
+    float leafColor[4] = { 34 / 255.0f, 139 / 255.0f, 34 / 255.0f, 1.0f };  // Warna daun hijau (rgba)
 
     // Matahari
-    glColor3ub(255, 215, 0);
-    matahari(0, 200);
+    glColor3ub(255, 215, 0); //warna rgb matahari
+    matahari(0, 200); //memanggil fungsi  matahari dengan x = 0 dan y = 200
 
     // Awan
-    glPushMatrix();
-    glTranslatef(tx, 0, 0);
-    awan(-450.0f, -20.0f);
+    glPushMatrix(); //Menyimpan (push) kondisi transformasi matriks saat ini ke dalam laisan yang bertumpuk (stack).
+    glTranslatef(tx, 0, 0); //menerapkan transformasi translasi (pergeseran posisi) terhadap objek yang akan digambar
+    awan(-450.0f, -20.0f); //memanggil fungsi awan dengan x sekian dan y sekian
     awan(-370.0f, -65.0f);
     awan(-310.0f, 0.0f);
     awan(-230.0f, -30.0f);
@@ -231,14 +236,15 @@ void display() {
     awan(310.0f, 0.0f);
     awan(370.0f, -65.0f);
     awan(430.0f, -40.0f);
-    glPopMatrix();
-    tx += 0.1;
+    glPopMatrix(); //Mengembalikan kondisi transformasi matriks ke kondisi yang terakhir disimpan dengan glPushMatrix
+    tx += 0.1; //tx mengatur pergeseran posisi x awan (animasi)
     if (tx > 250)
-        tx = -250;
+        tx = -250; //apabila sudah mencapai suatu posisi tertentu, kembali ke posisi awal
 
     // Gunung
-    glColor3ub(170, 153, 111);
+    glColor3ub(170, 153, 111); //warna rgb gunung
     gunung(190.0f, 200.0f, 230.0f, 400.0f, 0.5f);
+    //tx = titik x puncak gunung; ty = titik y puncak gunung; t = tinggi gunung; l = lebar gunung; scale = skala gunung
 
     glColor3ub(194, 178, 128);
     gunung(-50.0f, 200.0f, 230.0f, 400.0f, 0.5f);
@@ -248,39 +254,44 @@ void display() {
     gunung(-200.0f, 200.0f, 230.0f, 400.0f, 0.5f);
 
     // Alas
-    glColor3ub(210, 192, 145);
-    kotak(-250 * 2, 250 * 2, -250, 85); // Diperluas untuk mencakup seluruh jendela
+    glColor3ub(210, 192, 145); //rgb tanah
+    kotak(-250 * 2, 250 * 2, -250, 85); // Diperluas untuk mencakup seluruh jendela 
+    //left = sisi kiri; right = sisi kanan; bottom = sisi bawah; top = sisi atas
 
     // Danau
-    glColor3ub(118, 249, 249);
-    float danauCenterX = 0.0f, danauCenterY = -90.0f;
-    float danauRadiusX = 300.0f, danauRadiusY = 100.0f;
+    glColor3ub(118, 249, 249); //warna biru danau
+    float danauCenterX = 0.0f, danauCenterY = -90.0f; //titik pusat
+    float danauRadiusX = 300.0f, danauRadiusY = 100.0f; //jari-jari elips
     danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY);
 
     // Set Stencil Buffer untuk Refleksi
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_ALWAYS, 1, 0xFF); // Selalu tulis ke stencil buffer
-    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Tulis ke stencil buffer jika tes berhasil
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Nonaktifkan penggambaran ke layar
+    glEnable(GL_STENCIL_TEST); //mengaktifkan stencil test pada open gl yang memungkinkan kontrol area spesifik di layar tempat gambar yang dapat dirender
+    glStencilFunc(GL_ALWAYS, 1, 0xFF); //GL_ALWAYS = test selalu berhasil; 1 = nilai referensi yang ditulis ke stencil buffer apabila tes berhasil;
+    //0xFF = Mask yang menentukan bahwa semua bit dari referensi akan digunakan
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Jangan ubah nilai stencil saat tes gagal; Tulis ke stencil buffer jika tes berhasil
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    // Menonaktifkan penggambaran warna ke layar sehingga hanya stencil buffer yang diperbarui. Ini memastikan bentuk danau hanya memengaruhi stencil buffer.
 
     // Gambarkan bentuk danau ke stencil buffer
-    glBegin(GL_POLYGON);
+    glBegin(GL_POLYGON); //menggambar poligon (danau)
     for (float angle = 0.0f; angle <= 2 * 3.14159f; angle += 0.1f) {
         float x = danauCenterX + danauRadiusX * cos(angle);
         float y = danauCenterY + danauRadiusY * sin(angle);
         glVertex2f(x, y);
     }
-    glEnd();
+    glEnd(); //selesai gambar danau
 
 //=================================== REFLEKSI =================================================
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Aktifkan kembali penggambaran ke layar
-    glStencilFunc(GL_EQUAL, 1, 0xFF); // Gambar hanya di area yang ditentukan oleh stencil
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Mengaktifkan kembali penggambaran warna ke layar, setelah sebelumnya dinonaktifkan
+    glStencilFunc(GL_EQUAL, 1, 0xFF); // GL_EQUAL = Tes berhasil jika nilai stencil saat ini sama dengan referensi (1).
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Jangan ubah nilai stencil buffer
 
     // Refleksi Awan
     glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(tx, 0, 0); // Terapkan transformasi horizontal
+    glScalef(1.0f, -1.0f, 1.0f); //menerapkan transformasi skala (perubahan ukuran) terhadap objek yang akan digambar
+    //(tidak ada perubahan pada sumbu x, membalikkan sumbu y untuk menciptakan efek pantulan, tidak ada perubahan pada sumbu z (tidak relevan di 2d))
+    //oleh karena transformasi skala ini bisa digunakan untuk menciptakan refleksi
+    glTranslatef(tx, 0, 0); // transformasi horizontal
     awan(-370.0f, -65.0f);
     awan(-150.0f, -70.0f);
     awan(370.0f, -65.0f);
@@ -288,10 +299,11 @@ void display() {
 
     // Refleksi Gunung
     glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f); // Flip vertikal
-    glTranslatef(0, 400.0f, 0); // Sesuaikan posisi y refleksi
-    glColor4f(170 / 255.0f, 153 / 255.0f, 111 / 255.0f, 1.0f); // Transparansi gunung
+    glScalef(1.0f, -1.0f, 1.0f); //menerapkan transformasi skala (perubahan ukuran), dan lebih tepatnya merefleksikan, terhadap objek yang akan digambar
+    glTranslatef(0, 400.0f, 0); //translasi y (sesuaikan posisinya)
+    glColor4f(170 / 255.0f, 153 / 255.0f, 111 / 255.0f, 1.0f); //rgba
     gunung(190.0f, -200.0f, 230.0f, 400.0f, 0.5f);
+    //tx = titik x puncak gunung; ty = titik y puncak gunung; t = tinggi gunung; l = lebar gunung; scale = skala gunung
 
     glColor4f(194 / 255.0f, 178 / 255.0f, 128 / 255.0f, 1.0f);
     gunung(-50.0f, -200.0f, 230.0f, 400.0f, 0.5f);
@@ -300,57 +312,51 @@ void display() {
     glColor4f(170 / 255.0f, 153 / 255.0f, 111 / 255.0f, 1.0f);
     gunung(-200.0f, -200.0f, 230.0f, 400.0f, 0.5f);
     glPopMatrix();
-
-    // Refleksi Matahari
-    glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(0, -2 * 90.0f, 0); // Sesuaikan posisi y refleksi
-    glColor4f(255 / 255.0f, 215 / 255.0f, 0 / 255.0f, 1.0f); // Transparansi matahari
-    matahari(0, -200);
-    glPopMatrix();
+    
+    //tidak perlu refleksi matahari karena tidak masuk refleksi
 
     // Refleksi Tanah
     glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f);
+    glScalef(1.0f, -1.0f, 1.0f); //transformasi skala refleksi trhdp sumbu x (balik vertikal)
     glTranslatef(0, 170.0f, 0); // Sesuaikan posisi y refleksi
-    glColor4f(210 / 255.0f, 192 / 255.0f, 145 / 255.0f, 1.0f); // Transparansi tanah
+    glColor4f(210 / 255.0f, 192 / 255.0f, 145 / 255.0f, 1.0f); //rgba
     kotak(-250 * 2, 250 * 2, -250, -85);
     glPopMatrix();
 
     //Tumbleweed (refleksi)
-    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); // Warna dengan transparansi (rgba)
-    glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f);
-    glTranslatef(bx, by, 0); //posisi tumbleweed
-    glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(?,?,jari-jari,ketebalan)
+    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); //(rgba)
+    glPushMatrix(); 
+    glScalef(1.0f, -1.0f, 1.0f); //transformasi skala refleksi trhdp sumbu x (balik vertikal)
+    glTranslatef(bx, by, 0); //trasnformasi translasi posisi tumbleweed (akan berubah posisi, animasi)
+    glRotatef(angle, 0.0f, 0.0f, 1.0f); //transformasi rotasi
+    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(x,y,radius,jumlah jari-jari,ketebalan)
     glPopMatrix();
 
-    // Pohon Kelapa (Refleksi)
-    glPushMatrix();
-    glScalef(1.0f, -1.0f, 1.0f);
+    // Pohon (Refleksi)
+    glPushMatrix(); 
+    glScalef(1.0f, -1.0f, 1.0f); //transformasi skala refleksi trhdp sumbu x (balik vertikal)
     glTranslatef(220, 60, 0);
-    pohon(0, 0, 0.4f, trunkColor, leafColor);
+    pohon(0, 0, 0.4f, trunkColor, leafColor); //x,y,skala,warna batang, warna daun
     glPopMatrix();
 
     // Danau
     glPushMatrix();
-    glColor4f(118 / 255.0f, 249 / 255.0f, 249 / 255.0f, 0.5f);
-    danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY);
+    glColor4f(118 / 255.0f, 249 / 255.0f, 249 / 255.0f, 0.5f); //rgba
+    danau(danauCenterX, danauCenterY, danauRadiusX, danauRadiusY); //memanggil danau
     glPopMatrix();
 
-    glDisable(GL_STENCIL_TEST); // Nonaktifkan stencil buffer (crop danau untuk objek setelah kode ini dimatikan)
+    glDisable(GL_STENCIL_TEST); //matikan stencil buffer (crop danau untuk objek setelah kode ini dimatikan)
 //=================================== ORIGINAL =================================================
 
     // Tumbleweed
-    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); // Warna dengan transparansi (rgba)
+    glColor4f(105 / 255.0f, 92 / 255.0f, 59 / 255.0f, 1.0f); //rgba
     glPushMatrix();
     glTranslatef(bx, by, 0); //posisi tumbleweed
     glRotatef(angle, 0.0f, 0.0f, 1.0f);
-    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(?,?,jari-jari,ketebalan)
+    tumbleweed(0.0f, 0.0f, 25.0f, 200, 1.5f); //(x,y,radius,jumlah jari-jari,ketebalan)
     glPopMatrix();
 
-    // Pohon Kelapa
+    // Pohon
     pohon(220, 30, 0.4f, trunkColor, leafColor);
 
     // Update posisi tumbleweed
@@ -375,29 +381,31 @@ void display() {
     else if (leafAngle < -15.0f)
         leafDirection = true;
 
-    glutPostRedisplay();
-    glFlush();
+    glutPostRedisplay(); //Fungsi ini memberi tahu OpenGL Utility Toolkit(GLUT) bahwa window perlu diperbarui atau digambar ulang.
+    glFlush(); //Fungsi ini memastikan bahwa semua perintah OpenGL yang berada dalam antrian command buffer akan segera dijalankan oleh GPU.
 }
 
-void init() {
-    glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0);
-    glOrtho(-250.0, 250.0, -250.0, 250.0, -1.0, 1.0);
+void init() { //mengatur parameter awal openGL
+    glClearColor(135.0 / 255.0, 206.0 / 255.0, 235.0 / 255.0, 1.0); //waran latar belakang biru langit
+    glOrtho(-250.0, 250.0, -250.0, 250.0, -1.0, 1.0); //Mengatur proyeksi ortografis
     glEnable(GL_STENCIL_TEST); // Aktifkan stencil buffer
-    glEnable(GL_BLEND);        // Aktifkan blending
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);        // Aktifkan blending untuk format warna rgba
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Aktifkan blending untuk format wrna rgba
 }
 
-int main(int argc, char** argv) {
-    srand(time(0)); // Inisialisasi random seed
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL);
-    glutInitWindowSize(1600, 900);
-    glutCreateWindow("Pohon Kelapa dan Tumbleweed");
+int main(int argc, char** argv) { //gatur GLUT (OpenGL Utility Toolkit) dan memulai loop utama
+    srand(time(0)); // Inisialisasi random untuk pengacak
+    glutInit(&argc, argv); //Menginisialisasi GLUT dengan parameter dari baris perintah
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL); // mode tampilan
+    //GLUT_SINGLE = buffer tunggal; GLUT_RGB = warna basis rgb; GLUT_DEPTH: Mengaktifkan depth buffer (meskipun tidak digunakan di grafik 2D).
+    //GLUT_STENCIL = mengaktifkan buffer stencil
+    glutInitWindowSize(1600, 900); //ukuran window saat dirun
+    glutCreateWindow("KELOMPOK 20 'GURUN OASIS'");
 
-    init();
-    glutDisplayFunc(display);
-    glutReshapeFunc(reshape); // Tambahkan callback reshape
-    glutMainLoop();
+    init(); //panggil fungsi init
+    glutDisplayFunc(display); //mendaftarkan fungsi display untuk menjalankan program utama
+    glutReshapeFunc(reshape); //mendaftarkan fungsi reshape untuk masalah resolusi
+    glutMainLoop(); //memulai loop utama
 
-    return 0;
+    return 0; //akhir fungsi
 }
